@@ -13,24 +13,42 @@
     import imgUrl from '../assets/mit.png';
 
     const { createCanvas, loadImage } = useCanvas();
-    const { detector, setObjectDetector } = useMl5();
+    const { results, detect, setObjectDetector } = useMl5();
 
     async function init(){
-        // load all resource
-        const image = await loadImage(imgUrl);
+        try {
+            // load all resource
+            const image = await loadImage(imgUrl);
 
-        // create canvas
-        const canvas = createCanvas();
+            // create canvas
+            const canvas = createCanvas();
 
-        // draw resouce to canvas
-        const context = canvas.getContext("2d");
+            // draw resouce to canvas
+            const context = canvas.getContext("2d");
 
-        context.drawImage(image, 0, 0, 640, 480);
+            context.drawImage(image, 0, 0, 640, 480);
 
-        // using model
-        await setObjectDetector('cocossd');
+            // using model
+            await setObjectDetector('cocossd');
 
-        console.log(detector);
+            // detect object in image
+            await detect(image);
+
+            // draw into object detected
+            results.value.map(result => {
+                // retecgle
+                context.strokeStyle = "green";
+                context.lineWidth = 4;
+                context.strokeRect(result.x, result.y, result.width, result.height)
+
+                // text
+                context.font = "20px Arial";
+                context.fillStyle = "green";
+                context.fillText(`${result.label} - ${(result.confidence * 100).toFixed(2)}`, result.x + 10,result.y + 180)
+            });
+        } catch (err) {
+            console.error(err.message);
+        }
     }
     
     onMounted(() => {

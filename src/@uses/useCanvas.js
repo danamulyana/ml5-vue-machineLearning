@@ -6,6 +6,7 @@ function createCanvas() {
     canvas.id = "canvas";
     canvas.width = 700;
     canvas.height = 500;
+    canvas.style.margin = "0 auto";
     canvas.style.backgroundColor = 'pink';
 
     // find parent element
